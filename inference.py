@@ -16,6 +16,7 @@ import itertools
 import random
 import busters
 import game
+import math
 
 from util import manhattanDistance, raiseNotDefined
 
@@ -119,19 +120,23 @@ class DiscreteDistribution(dict):
 
         weights = self.keys()
         indices = self.values()
+
         randChoice = random.random() # Range is [0.0, 1.0)
+        sampleSize = math.floor(randChoice * len(self))
+
+        return random.sample(weights, sampleSize)
 
         # Start at the "beginning" of our distribution
-        index, prob = 0, weights[0]
-
-        # Iterate through the distribution
-        # for a random amount of indices
-        while randChoice > prob:
-            index += 1
-            prob += weights[index]
-
-        # Return that key
-        return indices[index]
+        # index, prob = 0, weights[0]
+        #
+        # # Iterate through the distribution
+        # # for a random amount of indices
+        # while randChoice > prob:
+        #     index += 1
+        #     prob += weights[index].getValue(index)
+        #
+        # # Return that key
+        # return indices[index]
 
 
 class InferenceModule:
@@ -433,7 +438,10 @@ class ParticleFilter(InferenceModule):
         # Otherwise normalize, update beliefs, and resample
         else:
             distribution.normalize()
+            self.particles = distribution.sample()
+            #print(distribution)
             # Assign self.particles?
+
 
     def elapseTime(self, gameState):
         """
@@ -526,7 +534,21 @@ class JointParticleFilter(ParticleFilter):
         the DiscreteDistribution may be useful.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        pacmanPos = gameState.getPacmanPosition()
+        jailPos = self.getJailPosition()
+        allProbZero = True
+
+        #  im not sure if I should be using particle positions or ghost positions like in q2
+        for p in self.particles:
+            prob = self.getObservationProb(observation, pacmanPos, p[0], jailPos)
+
+            if prob != 0:
+                allProbZero = False
+
+        # When all particles receive zero weight, the list of particles should
+        # be reinitialized by calling initializeUniformly.
+        if allProbZero:
+            self.initializeUniformly(gameState)
 
     def elapseTime(self, gameState):
         """
