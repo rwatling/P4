@@ -402,7 +402,6 @@ class ParticleFilter(InferenceModule):
         for pos in self.legalPositions:
             self.particles.append((pos, particlesPerPos))
 
-
     def observeUpdate(self, observation, gameState):
         """
         Question 6: observeUpdate method 
@@ -418,7 +417,23 @@ class ParticleFilter(InferenceModule):
         the DiscreteDistribution may be useful.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        pacmanPosition = gameState.getPacmanPosition()
+        jailPosition = self.getJailPosition()
+        distribution = DiscreteDistribution()
+
+        # Weight portion of particle filtering
+        for particle in self.particles:
+            prob = self.getObservationProb(observation, pacmanPosition, particle[0], jailPosition)
+            distribution[particle] += prob
+
+        # Special case
+        if distribution.total() == 0:
+            self.initializeUniformly(gameState)
+
+        # Otherwise normalize, update beliefs, and resample
+        else:
+            distribution.normalize()
+            # Assign self.particles?
 
     def elapseTime(self, gameState):
         """

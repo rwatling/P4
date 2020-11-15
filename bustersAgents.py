@@ -145,11 +145,12 @@ class GreedyBustersAgent(BustersAgent):
         livingGhostPositionDistributions = \
             [beliefs for i, beliefs in enumerate(self.ghostBeliefs)
              if livingGhosts[i+1]]
-        "*** YOUR CODE HERE ***"
 
+        "*** YOUR CODE HERE ***"
         # Get the closest ghost based off of beliefs
         distance = float("inf")
         ghostPos = 0
+
         for distribution in livingGhostPositionDistributions:
             # Pacman assumes that each ghost is in
             # the most likely position according to his beliefs
@@ -164,6 +165,7 @@ class GreedyBustersAgent(BustersAgent):
         # Get successor action closest to closest ghost
         closestPos = float("inf")
         retAction = None
+
         for action in legal:
             successorPosition = Actions.getSuccessor(pacmanPosition, action)
             successorDistance = self.distancer.getDistance(successorPosition, ghostPos)
@@ -173,5 +175,3 @@ class GreedyBustersAgent(BustersAgent):
                 retAction = action
 
         return retAction
-
-        
