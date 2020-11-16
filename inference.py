@@ -421,10 +421,11 @@ class ParticleFilter(InferenceModule):
         pacmanPosition = gameState.getPacmanPosition()
         jailPosition = self.getJailPosition()
         distribution = self.getBeliefDistribution()
+        keys = list(distribution.keys())
 
         # Weight portion of particle filtering and updating beliefs
-        for particle in distribution.keys:
-            prob = self.getObservationProb(observation, pacmanPosition, particle[0], jailPosition)
+        for particle in keys:
+            prob = self.getObservationProb(observation, pacmanPosition, particle, jailPosition)
             distribution[particle] *= prob
 
         # Special case
@@ -434,11 +435,19 @@ class ParticleFilter(InferenceModule):
         # rebuild particle list
         else:
             distribution.normalize()
+            newParticlePos = list()
+            newParticles = list()
 
-            # correct update?
-            for particle in self.particles:
-                newParticle = distribution.sample()
-                self.particles[particle] = newParticle
+            for i in range(self.numParticles):
+                sample = distribution.sample()
+                newParticlePos.append(sample)
+
+            while newParticlePos:
+                pos = newParticlePos.pop()
+                countPos = newParticlePos.count(pos)
+                newParticles.append((pos, float(countPos)))
+
+            exit()
 
 
     def elapseTime(self, gameState):
