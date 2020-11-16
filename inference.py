@@ -111,32 +111,21 @@ class DiscreteDistribution(dict):
         0.0
         """
         "*** YOUR CODE HERE ***"
-        # Not entirely confident on this but
-        # just followed the comments above
-
         # The distribution does not necessarily have to be normalized
         if self.total() != 1:
             self.normalize()
 
         weights = self.keys()
-        indices = self.values()
 
-        randChoice = random.random() # Range is [0.0, 1.0)
+        randChoice = random.random()
         sampleSize = math.floor(randChoice * len(self))
 
+        # returns multiple samples
         return random.sample(weights, sampleSize)
 
-        # Start at the "beginning" of our distribution
-        # index, prob = 0, weights[0]
-        #
-        # # Iterate through the distribution
-        # # for a random amount of indices
-        # while randChoice > prob:
-        #     index += 1
-        #     prob += weights[index].getValue(index)
-        #
-        # # Return that key
-        # return indices[index]
+        # return one sample
+        # dist = self.copy()
+        # return random.sample(dist, 1)
 
 
 class InferenceModule:
