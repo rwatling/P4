@@ -444,10 +444,13 @@ class ParticleFilter(InferenceModule):
 
             while newParticlePos:
                 pos = newParticlePos.pop()
-                countPos = newParticlePos.count(pos)
+                countPos = newParticlePos.count(pos) + 1
                 newParticles.append((pos, float(countPos)))
 
-            exit()
+                while pos in newParticlePos:
+                    newParticlePos.remove(pos)
+
+            self.particles = newParticles
 
 
     def elapseTime(self, gameState):
