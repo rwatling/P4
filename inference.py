@@ -111,21 +111,30 @@ class DiscreteDistribution(dict):
         0.0
         """
         "*** YOUR CODE HERE ***"
-        # The distribution does not necessarily have to be normalized
-        if self.total() != 1:
-            self.normalize()
-
-        weights = self.keys()
-
+        self.normalize()
+        dist = self.copy()
+        keys = dist.keys()
+        values = dist.values()
         randChoice = random.random()
-        sampleSize = math.floor(randChoice * len(self))
 
-        # returns multiple samples
-        return random.sample(weights, sampleSize)
+        cumulative = 0.0
+        bins = list
+        bins[0] = cumulative
+        for i in range(1, len(values)):
+            cumulative = bins[i-1] + values(i)
+            bins[i] = cumulative
 
-        # return one sample
-        # dist = self.copy()
-        # return random.sample(dist, 1)
+        myBin = 0
+        for j in len(bins):
+            if randChoice > bins[j]:
+                myBin = j
+            else:
+                break
+
+        return keys[myBin]
+
+        # Not in python 3.6 but the same idea
+        # random.sample(keys, 1, counts=values)
 
 
 class InferenceModule:
@@ -413,23 +422,25 @@ class ParticleFilter(InferenceModule):
         "*** YOUR CODE HERE ***"
         pacmanPosition = gameState.getPacmanPosition()
         jailPosition = self.getJailPosition()
-        distribution = DiscreteDistribution()
+        distribution = self.getBeliefDistribution()
 
-        # Weight portion of particle filtering
-        for particle in self.particles:
+        # Weight portion of particle filtering and updating beliefs
+        for particle in distribution.keys:
             prob = self.getObservationProb(observation, pacmanPosition, particle[0], jailPosition)
-            distribution[particle] += prob
+            distribution[particle] *= prob
 
         # Special case
         if distribution.total() == 0:
             self.initializeUniformly(gameState)
 
-        # Otherwise normalize, update beliefs, and resample
+        # rebuild particle list
         else:
             distribution.normalize()
-            self.particles = distribution.sample()
-            #print(distribution)
-            # Assign self.particles?
+
+            # correct update?
+            for particle in self.particles:
+                newParticle = distribution.sample()
+                self.particles[particle] = newParticle
 
 
     def elapseTime(self, gameState):
