@@ -113,19 +113,17 @@ class DiscreteDistribution(dict):
         "*** YOUR CODE HERE ***"
         self.normalize()
         dist = self.copy()
-        keys = dist.keys()
-        values = dist.values()
+        keys = list(dist.keys())
+        values = list(dist.values())
         randChoice = random.random()
 
-        cumulative = 0.0
-        bins = list
-        bins[0] = cumulative
+        bins = list()
+        bins.append(0.0)
         for i in range(1, len(values)):
-            cumulative = bins[i-1] + values(i)
-            bins[i] = cumulative
+            bins.append(bins[i-1] + values[i-1])
 
         myBin = 0
-        for j in len(bins):
+        for j in range(len(bins)):
             if randChoice > bins[j]:
                 myBin = j
             else:
