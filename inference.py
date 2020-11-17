@@ -466,14 +466,44 @@ class ParticleFilter(InferenceModule):
         """
         "*** YOUR CODE HERE ***"
         newParticlePos = list()
+        newParticles = list()
 
+        # For each 'position'
         for i in range(len(self.particles)):
             particle = self.particles[i]
             dist = self.getPositionDistribution(gameState, particle[0])
-            sample = dist.sample()
-            newParticlePos.append(sample)
-            print(sample)
-            exit()
+
+            # For each 'count' of a position sample and
+            # add to a position list
+            for j in range(int(particle[1])):
+                sample = dist.sample()
+                newParticlePos.append(sample)
+
+        # If for some reason the sizes don't match up, randomly sample
+        difference = self.numParticles - len(newParticlePos)
+
+        # If there is a small difference between the total number of particles
+        # and the total number of samples
+        if difference:
+            for k in range(difference):
+                randPosInd = random.random() * len(self.particles)
+                randPosInd = int(randPosInd)
+                particle = self.particles[randPosInd]
+                dist = self.getPositionDistribution(gameState, particle[0])
+                newParticlePos.append(dist.sample())
+
+        # For each position, count the position occurrences
+        # Add (pos, count) to particle list
+        # Remove occurrences from list
+        while newParticlePos:
+            pos = newParticlePos.pop()
+            countPos = newParticlePos.count(pos) + 1
+            newParticles.append((pos, float(countPos)))
+
+            while pos in newParticlePos:
+                newParticlePos.remove(pos)
+
+        self.particles = newParticles
 
     def getBeliefDistribution(self):
         """
