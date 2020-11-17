@@ -438,10 +438,14 @@ class ParticleFilter(InferenceModule):
             newParticlePos = list()
             newParticles = list()
 
+            # get samples
             for i in range(self.numParticles):
                 sample = distribution.sample()
                 newParticlePos.append(sample)
 
+            # For each position, count the position occurrences
+            # Add (pos, count) to particle list
+            # Remove occurrences from list
             while newParticlePos:
                 pos = newParticlePos.pop()
                 countPos = newParticlePos.count(pos) + 1
@@ -461,7 +465,15 @@ class ParticleFilter(InferenceModule):
         gameState.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        newParticlePos = list()
+
+        for i in range(len(self.particles)):
+            particle = self.particles[i]
+            dist = self.getPositionDistribution(gameState, particle[0])
+            sample = dist.sample()
+            newParticlePos.append(sample)
+            print(sample)
+            exit()
 
     def getBeliefDistribution(self):
         """
